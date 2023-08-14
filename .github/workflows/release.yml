@@ -1,0 +1,41 @@
+name: Build and release
+
+on:
+  workflow_dispatch:
+  release:
+    types: [published]
+
+jobs:
+  build:
+    name: Build and release
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.21'
+
+      - name: Run build script
+        run: make -f Makefile.amd64
+        shell: bash
+
+      - name: Upload files to Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: build
+          path: |
+            ./release/*
+
+      - name: Upload binaries to release
+        uses: svenstaro/upload-release-action@v2
+        if: github.event_name == 'release'
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: ./release/*
+          tag: ${{ github.ref }}
+          overwrite: true
+          file_glob: true
