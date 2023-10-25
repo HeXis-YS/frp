@@ -91,8 +91,6 @@ We will transition from version 0 to version 1 at the appropriate time and will 
 
 ### About V2
 
-The overall situation is currently unfavorable, and there is significant pressure in both personal and professional aspects.
-
 The complexity and difficulty of the v2 version are much higher than anticipated. I can only work on its development during fragmented time periods, and the constant interruptions disrupt productivity significantly. Given this situation, we will continue to optimize and iterate on the current version until we have more free time to proceed with the major version overhaul.
 
 The concept behind v2 is based on my years of experience and reflection in the cloud-native domain, particularly in K8s and ServiceMesh. Its core is a modernized four-layer and seven-layer proxy, similar to envoy. This proxy itself is highly scalable, not only capable of implementing the functionality of intranet penetration but also applicable to various other domains. Building upon this highly scalable core, we aim to implement all the capabilities of frp v1 while also addressing the functionalities that were previously unachievable or difficult to implement in an elegant manner. Furthermore, we will maintain efficient development and iteration capabilities.
@@ -218,7 +216,7 @@ Unfortunately, we cannot resolve a domain name to a local IP. However, we can us
   vhostHTTPPort = 8080
   ```
 
-  If you want to configure an https proxy, you need to set up the `vhost_https_port`.
+  If you want to configure an https proxy, you need to set up the `vhostHTTPSPort`.
 
 2. Start `frps`:
 
@@ -337,7 +335,7 @@ Configure `frps` as described above, then:
 
 ### Enable HTTPS for a local HTTP(S) service
 
-You may substitute `https2https` for the plugin, and point the `plugin_local_addr` to a HTTPS endpoint.
+You may substitute `https2https` for the plugin, and point the `localAddr` to a HTTPS endpoint.
 
 1. Start `frpc` with the following configuration:
 
@@ -369,7 +367,7 @@ To mitigate risks associated with exposing certain services directly to the publ
 
 Configure `frps` same as above.
 
-1. Start `frpc` on machine B with the following config. This example is for exposing the SSH service (port 22), and note the `sk` field for the preshared key, and that the `remote_port` field is removed here:
+1. Start `frpc` on machine B with the following config. This example is for exposing the SSH service (port 22), and note the `secretKey` field for the preshared key, and that the `remotePort` field is removed here:
 
   ```toml
   # frpc.toml
@@ -384,7 +382,7 @@ Configure `frps` same as above.
   localPort = 22
   ```
 
-2. Start another `frpc` (typically on another machine C) with the following config to access the SSH service with a security key (`sk` field):
+2. Start another `frpc` (typically on another machine C) with the following config to access the SSH service with a security key (`secretKey` field):
 
   ```toml
   # frpc.toml
@@ -461,9 +459,11 @@ Read the full example configuration files to find out even more features not des
 
 Examples use TOML format, but you can still use YAML or JSON.
 
-[Full configuration file for frps (Server)](./conf/frps.toml)
+These configuration files is for reference only. Please do not use this configuration directly to run the program as it may have various issues.
 
-[Full configuration file for frpc (Client)](./conf/frpc.toml)
+[Full configuration file for frps (Server)](./conf/frps_full_example.toml)
+
+[Full configuration file for frpc (Client)](./conf/frpc_full_example.toml)
 
 ### Using Environment Variables
 
@@ -526,7 +526,7 @@ webServer.user = "admin"
 webServer.password = "admin"
 ```
 
-Then visit `http://[server_addr]:7500` to see the dashboard, with username and password both being `admin`.
+Then visit `http://[serverAddr]:7500` to see the dashboard, with username and password both being `admin`.
 
 Additionally, you can use HTTPS port by using your domains wildcard or normal SSL certificate:
 
@@ -539,7 +539,7 @@ webServer.tls.certFile = "server.crt"
 webServer.tls.keyFile = "server.key"
 ```
 
-Then visit `https://[server_addr]:7500` to see the dashboard in secure HTTPS connection, with username and password both being `admin`.
+Then visit `https://[serverAddr]:7500` to see the dashboard in secure HTTPS connection, with username and password both being `admin`.
 
 ![dashboard](/doc/pic/dashboard.png)
 
@@ -836,7 +836,7 @@ Using QUIC in frp:
   quicBindPort = 7000
   ```
 
-  The `quicBindPort` number can be the same number as `bind_port`, since `bind_port` field specifies a TCP port.
+  The `quicBindPort` number can be the same number as `bindPort`, since `bindPort` field specifies a TCP port.
 
 2. Configure `frpc.toml` to use QUIC to connect to frps:
 
